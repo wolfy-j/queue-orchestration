@@ -64,6 +64,8 @@ class RouteWorkflow
             // redirect traffic
             $wait = [];
             foreach ($routes as $group => $route) {
+                // todo: keep activated routes to avoid duplicates
+
                 if ($route === null) {
                     // no longer need to use custom route
                     $updates[] = $this->route->resetRoute($group);
