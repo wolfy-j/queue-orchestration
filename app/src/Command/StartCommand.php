@@ -15,6 +15,8 @@ use Spiral\RoadRunner\Jobs\Jobs;
 use Spiral\RoadRunner\Jobs\Queue\MemoryCreateInfo;
 use Symfony\Component\Console\Input\InputArgument;
 use Temporal\Client\WorkflowClientInterface;
+use Temporal\Client\WorkflowOptions;
+use Temporal\Common\IdReusePolicy;
 
 class StartCommand extends Command
 {
@@ -30,13 +32,22 @@ class StartCommand extends Command
             $jobs->create(new MemoryCreateInfo('default', 1));
             $jobs->resume('default');
             $this->writeln("<info>OK</info>");
-        } catch (\Throwable) {
-            $this->writeln("<error>FAIL</error>");
+        } catch (\Throwable $e) {
+            $this->writeln("<error>" . $e->getMessage() . "</error>");
         }
 
         $this->write("Queue supervisor: ");
-        $wf = $workflowClient->newWorkflowStub(RouteWorkflow::class);
-        $workflowClient->start($wf);
-        $this->writeln("<info>OK</info>");
+        $wf = $workflowClient->newWorkflowStub(
+            RouteWorkflow::class,
+            WorkflowOptions::new()
+                ->withWorkflowId(gethostname() . '-queue-supervisor')
+                ->withWorkflowIdReusePolicy(IdReusePolicy::POLICY_REJECT_DUPLICATE)
+        );
+        try {
+            $workflowClient->start($wf);
+            $this->writeln("<info>OK</info>");
+        } catch (\Throwable $e) {
+            $this->writeln("<error>" . $e->getMessage() . "</error>");
+        }
     }
 }

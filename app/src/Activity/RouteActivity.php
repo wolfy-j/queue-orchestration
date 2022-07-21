@@ -48,8 +48,12 @@ class RouteActivity
     ): void {
         dumprr(sprintf("New queue route `%s`", $route));
 
-        $this->jobs->create(new MemoryCreateInfo($route, $priority));
-        $this->jobs->resume($route);
+        try {
+            $this->jobs->create(new MemoryCreateInfo($route, $priority));
+            $this->jobs->resume($route);
+        } catch (\Throwable $e) {
+            dumprr(sprintf("Duplicate queue route `%s`", $route));
+        }
     }
 
     #[ActivityMethod]
