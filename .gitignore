@@ -7,3 +7,6 @@ spiral*
 .phpunit.result.cache
 composer.lock
 temporal-server/*
+/id_rsa.pub
+/composer-setup.php
+/composer.phar
