@@ -2,15 +2,15 @@
 
 ```bash
 cd ${S2S_PATH}
-git clone https://github.com/stock2shop/dynamic-queue-routing-on-temporal.git
+git clone https://github.com/stock2shop/queue-orchestration.git
 ```
 
 ## Docker
 
 ```bash
-cd ${S2S_PATH}/dynamic-queue-routing-on-temporal
+cd ${S2S_PATH}/queue-orchestration
 cp .env.sample .env # Set APP_DIR for path to your clone
-cp ~/.ssh/id_rsa.pub ${S2S_PATH}/dynamic-queue-routing-on-temporal/id_rsa.pub
+cp ~/.ssh/id_rsa.pub ${S2S_PATH}/queue-orchestration/id_rsa.pub
 docker-compose up
 ```
 
@@ -22,29 +22,6 @@ ssh -p 2223 root@localhost
 cd /mnt/app
 ```
 
-Then run the following commands
-**TODO** Add commands below to `Dockerfile`
-
-[Install composer](https://getcomposer.org/download/)
-```bash
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
-```
-
-Configure
-```bash
-# composer create-project spiral/app # app is already included in the repo
-# php app.php encrypt:key -m .env # Is this required?
-apt install zip unzip php-zip
-php composer.phar install
-# php app.php configure -vv
-php app.php configure
-./vendor/bin/rr get-binary
-chmod u+x ./rr
-```
-
 Run application
 ```bash
 # ./rr serve -v -d
@@ -52,10 +29,13 @@ Run application
 ./rr serve
 ```
 
-**TODO** Configuration?
+**TODO** Errors
 ```
-# ./rr serve
-2022-07-25T16:03:01.174Z	ERROR	server      	process wait	{"error": "signal: killed"}
+2022-07-27T17:29:41.789Z	INFO	server      	 [Cycle\Database\Exception\StatementException]
+ SQLSTATE[HY000] [1049] Unknown database 'what_must_this_be'
+in /mnt/app/vendor/cycle/database/src/Driver/MySQL/MySQLDriver.php:56
+
+2022-07-27T17:29:41.801Z	ERROR	server      	process wait	{"error": "exit status 255"}
 handle_serve_command: Serve error:
 	endure_start:
 	endure_serve_internal: Function call error:
