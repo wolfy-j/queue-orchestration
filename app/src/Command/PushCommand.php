@@ -10,19 +10,14 @@ declare(strict_types=1);
 namespace App\Command;
 
 use Spiral\Console\Command;
-use Spiral\Prototype\Traits\PrototypeTrait;
-use Spiral\Queue\Options;
-use Spiral\Queue\QueueInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use App\Service\PushService;
 
 class PushCommand extends Command
 {
-    use PrototypeTrait;
-
     protected const NAME = 'push';
-    protected const DESCRIPTION = 'Push payload';
+    protected const DESCRIPTION = 'Push payload to queue';
     protected const ARGUMENTS = [
         ['group', InputArgument::REQUIRED, 'Group to push'],
         ['value', InputArgument::REQUIRED, 'Payload to push']
@@ -31,8 +26,9 @@ class PushCommand extends Command
     protected const OPTIONS = [
         ['size', 's', InputOption::VALUE_OPTIONAL, 'Push size', 1]
     ];
-    /** @var PushService */
-    private $pushService;
+
+    private PushService $pushService;
+
     /**
      * @param PushService $pushService
      * @param string|null $name

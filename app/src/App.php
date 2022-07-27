@@ -13,15 +13,10 @@ namespace App;
 
 use App\Bootloader;
 use Spiral\Bootloader as Framework;
-use Spiral\DataGrid\Bootloader\GridBootloader;
 use Spiral\DotEnv\Bootloader as DotEnv;
 use Spiral\Framework\Kernel;
 use Spiral\Monolog\Bootloader as Monolog;
-use Spiral\Nyholm\Bootloader as Nyholm;
-use Spiral\Prototype\Bootloader as Prototype;
-use Spiral\Router\Bootloader\AnnotatedRoutesBootloader;
 use Spiral\Scaffolder\Bootloader as Scaffolder;
-use Spiral\Stempler\Bootloader as Stempler;
 use Spiral\Cycle\Bootloader as CycleBridge;
 use Spiral\RoadRunnerBridge\Bootloader as RoadRunnerBridge;
 use Spiral\TemporalBridge\Bootloader\TemporalBridgeBootloader;
@@ -39,8 +34,6 @@ class App extends Kernel
 
         // RoadRunner
         RoadRunnerBridge\CacheBootloader::class,
-        RoadRunnerBridge\GRPCBootloader::class,
-        RoadRunnerBridge\HttpBootloader::class,
         RoadRunnerBridge\QueueBootloader::class,
         RoadRunnerBridge\RoadRunnerBootloader::class,
 
@@ -49,23 +42,6 @@ class App extends Kernel
 
         // Core Services
         Framework\SnapshotsBootloader::class,
-        Framework\I18nBootloader::class,
-
-        // Security and validation
-        Framework\Security\EncrypterBootloader::class,
-        Framework\Security\ValidationBootloader::class,
-        Framework\Security\FiltersBootloader::class,
-        Framework\Security\GuardBootloader::class,
-
-        // HTTP extensions
-        Nyholm\NyholmBootloader::class,
-        //AnnotatedRoutesBootloader::class,
-        Framework\Http\ErrorHandlerBootloader::class,
-        Framework\Http\JsonPayloadsBootloader::class,
-        Framework\Http\CookiesBootloader::class,
-        Framework\Http\SessionBootloader::class,
-        Framework\Http\CsrfBootloader::class,
-        Framework\Http\PaginationBootloader::class,
 
         // Databases
         CycleBridge\DatabaseBootloader::class,
@@ -77,18 +53,6 @@ class App extends Kernel
         CycleBridge\CycleOrmBootloader::class,
         CycleBridge\AnnotatedBootloader::class,
         CycleBridge\CommandBootloader::class,
-
-        // DataGrid
-        // CycleBridge\DataGridBootloader::class,
-
-        // Auth
-        // CycleBridge\AuthTokensBootloader::class,
-
-        // Entity checker
-        // CycleBridge\ValidationBootloader::class,
-
-        // Extensions and bridges
-        //Stempler\StemplerBootloader::class,
 
         // Framework commands
         Framework\CommandBootloader::class,
@@ -103,21 +67,11 @@ class App extends Kernel
 
         // Temporal functionality
         TemporalBridgeBootloader::class,
-        GridBootloader::class
     ];
 
     /*
      * Application specific services and extensions.
      */
     protected const APP = [
-        //Bootloader\LocaleSelectorBootloader::class,
-
-        // fast code prototyping
-        Prototype\PrototypeBootloader::class,
-        Bootloader\AppBootloader::class,
-
-        Bootloader\TestBootloader::class,
-
-        //Bootloader\MetricsBootloader::class
     ];
 }

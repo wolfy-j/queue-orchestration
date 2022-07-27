@@ -16,10 +16,6 @@ class Channel
     #[Cycle\Column(type: "integer")]
     public int $count;
 
-    /**
-     * Channel constructor.
-     * @param string $id
-     */
     public function __construct(string $id)
     {
         $this->id = $id;

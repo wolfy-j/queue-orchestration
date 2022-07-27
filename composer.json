@@ -17,13 +17,11 @@
     "require": {
         "php": ">=8.0",
         "ext-mbstring": "*",
-        "doctrine/collections": "^1.6",
-        "spiral/cycle-bridge": "^1.0",
         "spiral/framework": "^2.9",
-        "spiral/nyholm-bridge": "^1.0",
+        "spiral/cycle-bridge": "^1.0",
         "spiral/roadrunner-bridge": "^1.0",
-        "spiral/roadrunner-metrics": "^2.0",
-        "spiral/temporal-bridge": "^1.2"
+        "spiral/temporal-bridge": "^1.2",
+        "doctrine/collections": "^1.6"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",

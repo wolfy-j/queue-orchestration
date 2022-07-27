@@ -39,9 +39,9 @@ return [
     'drivers'   => [
         'runtime' => new Config\MySQLDriverConfig(
             connection: new Config\MySQL\DsnConnectionConfig(
-                            dsn: "mysql:host=100.70.0.221;dbname=demo",
-                            user: "demo",
-                            password: "demo"
+                            dsn: "mysql:host=" . env("DB_HOST") . ";dbname=" . env("DB_NAME"),
+                            user: env("DB_USER"),
+                            password: env("DB_PASSWORD")
                         )
         ),
         // ...
