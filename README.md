@@ -2,40 +2,56 @@
 <img src="https://user-images.githubusercontent.com/2461257/112313394-d926c580-8cb8-11eb-84ea-717df4e4d167.png" width="400" alt="Spiral Framework">
 </p>
 
-# Spiral HTTP Application Skeleton [![Latest Stable Version](https://poser.pugx.org/spiral/app/version)](https://packagist.org/packages/spiral/app)
+# Queue Orchestration POC
 
-Spiral Framework is a High-Performance PHP/Go Full-Stack framework and group of over sixty PSR-compatible components. The Framework execution model based on a hybrid runtime where some services (GRPC, Queue, WebSockets, etc.) handled by Application Server [RoadRunner](https://github.com/spiral/roadrunner) and the PHP code of your application stays in memory permanently (anti-memory leak tools included).
-
-[App Skeleton](https://github.com/spiral/app) ([CLI](https://github.com/spiral/app-cli), [GRPC](https://github.com/spiral/app-grpc), [Admin Panel](https://github.com/spiral/app-keeper)) | [**Documentation**](https://spiral.dev/docs) | [Twitter](https://twitter.com/spiralphp) | [CHANGELOG](/CHANGELOG.md) | [Contributing](https://github.com/spiral/guide/blob/master/contributing.md)
-
-<br/>
+This repository demonstrates queue balancing and orchestration using RoadRunner queue API and Temporal server as
+orchestration platform. Demo is not intended for production usage.
 
 Server Requirements
 --------
 Make sure that your server is configured with following PHP version and extensions:
-* PHP 8.0+, 64bit
+
+* PHP 8.1+, 64bit
 * *mb-string* extension
 * PDO Extension with desired database drivers
+* MySQL database (or any alternative)
+* Temporal Server
 
-Application Bundle
+Pre-Installations
 --------
-Application bundle includes the following components:
-* High-performance HTTP, HTTP/2 server based on [RoadRunner](https://roadrunner.dev)
-* Console commands via Symfony/Console
-* Translation support by Symfony/Translation
-* Queue support for AMQP, Beanstalk, Amazon SQS, in-Memory
-* Stempler template engine
-* Security, validation, filter models
-* PSR-7 HTTP pipeline, session, encrypted cookies
-* DBAL and migrations support
-* Monolog, Dotenv
-* Prometheus metrics
-* [Cycle DataMapper ORM](https://github.com/cycle)
+
+- Make sure you have a running instance of MySQL, Postgres or etc (this demo can not work with SQLite)
+- Install Temporal Server (see an official docker - https://github.com/temporalio/docker-compose)
 
 Installation
 --------
+Clone the repository.
+
 ```
-composer create-project spiral/app
+$ git clone git@github.com:wolfy-j/queue-orchestration.git
+```
+
+Install dependencies:
+
+```
+$ composer install
+$ vendor/bin/rr get
+```
+
+Configure your env:
+
+```
+$ cp .env.sample .env
+```
+
+> Make sure to update .env with your database credentials!
+
+Configure application and database.
+
+```
+$ php app.php migrate
+$ php app.php configure
+
 ```
 
 > Application server will be downloaded automatically (`php-curl` and `php-zip` required).
@@ -46,41 +62,82 @@ Once the application is installed you can ensure that it was configured properly
 $ php ./app.php configure
 ```
 
+> Additionally, you can tweak configuration options in `.rr.yaml`.
+
+
+Starting Application
+-------
 To start application server execute:
 
 ```
-$ ./rr serve -v -d
+$ ./rr serve
 ```
 
 On Windows:
 
-```$xslt
-$ rr.exe serve -v -d
+```
+$ rr.exe serve
 ```
 
-Application will be available on `http://localhost:8080`.
+To view realtime statistic about workers and queue:
 
-> Read more about application server configuration [here](https://roadrunner.dev/docs).
+```
+$ ./rr workers -i
+```
 
-Testing:
+> We recommend keeping this in separate tab for observability.
+
+Running demo
 --------
-To test an application:
+First you have to start the temporal orchestration workflow:
 
-```bash
-$ ./vendor/bin/phpunit
+```
+$ php app.php start
 ```
 
-Cloning:
---------
-Make sure to properly configure project if you cloned the existing repository.
+To push data into named queue group:
 
-```bash
-$ copy .env.sample .env
-$ php app.php encrypt:key -m .env
-$ php app.php configure -vv
-$ ./vendor/bin/rr get-binary
 ```
+$ php app.php push {group} {payload} -s {count} 
+```
+
+For example (push 1000 messages to bob group):
+
+```
+$ php app.php push bob "hello world" -s 1000 
+```
+
+> Make sure to push to different groups to observe the behavior.
+
+To flush counts in case of any error:
+
+```
+$ php app.php flush
+```
+
+How it Works
+-------
+Demo is fully build Spiral framework, it contains two main parts.
+
+### Queue API
+RoadRunner application server exposes low-level API to manipulate with Queue brokers, 
+such as `create`, `destroy`, `consume` and `pause`. This application demo uses in-memory queue
+provider, but it's capable running on RabbitMQ, Amazon SQS, Beanstalk, Kafka, NATS and etc. 
+
+> You can find API calls in [here](app/src/Activity/RouteActivity.php).
+
+### Workflow
+In order to manage the queue application implements [RouteWorkflow](app/src/Workflow/RouteWorkflow.php).
+
+This workflow performs a simple logic of checking the optimal routing configuration every second and then
+reconfiguring system according to given configuration.
+
+Current logic pushes all message groups with count > 100 to dedicated queue with lower priority (or prefetch),
+the rest processes in the `default` queue.
+
+Feel free to implement your own balancing logic.
 
 License:
 --------
-MIT License (MIT). Please see [`LICENSE`](./LICENSE) for more information. Maintained by [Spiral Scout](https://spiralscout.com).
+MIT License (MIT). Please see [`LICENSE`](./LICENSE) for more information. Maintained
+by Wolfy-J.

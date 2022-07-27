@@ -11,9 +11,6 @@ namespace App\Command;
 
 use App\Workflow\RouteWorkflow;
 use Spiral\Console\Command;
-use Spiral\RoadRunner\Jobs\Jobs;
-use Spiral\RoadRunner\Jobs\Queue\MemoryCreateInfo;
-use Symfony\Component\Console\Input\InputArgument;
 use Temporal\Client\WorkflowClientInterface;
 use Temporal\Client\WorkflowOptions;
 use Temporal\Common\IdReusePolicy;
@@ -21,21 +18,10 @@ use Temporal\Common\IdReusePolicy;
 class StartCommand extends Command
 {
     protected const NAME = 'start';
-    protected const DESCRIPTION = '';
-    protected const ARGUMENTS = [];
-    protected const OPTIONS = [];
+    protected const DESCRIPTION = 'Start queue orchestrator';
 
-    protected function perform(Jobs $jobs, WorkflowClientInterface $workflowClient): void
+    protected function perform(WorkflowClientInterface $workflowClient): void
     {
-        try {
-            $this->write("Default queue: ");
-            $jobs->create(new MemoryCreateInfo('default', 1));
-            $jobs->resume('default');
-            $this->writeln("<info>OK</info>");
-        } catch (\Throwable $e) {
-            $this->writeln("<error>" . $e->getMessage() . "</error>");
-        }
-
         $this->write("Queue supervisor: ");
         $wf = $workflowClient->newWorkflowStub(
             RouteWorkflow::class,

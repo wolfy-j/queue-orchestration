@@ -6,10 +6,8 @@ use App\Database\Channel;
 use App\Job\Processor;
 use Cycle\Database\Injection\Expression;
 use Cycle\ORM\EntityManager;
-use Cycle\ORM\Transaction;
 use Spiral\Core\Container\SingletonInterface;
 use Spiral\Prototype\Annotation\Prototyped;
-use Spiral\Prototype\Traits\PrototypeTrait;
 use Spiral\Queue\Options;
 use Spiral\Queue\QueueInterface;
 use Cycle\Database\DatabaseInterface;
@@ -19,14 +17,15 @@ use App\Database\ChannelRepository;
 #[Prototyped("pushService")]
 class PushService implements SingletonInterface
 {
-    use PrototypeTrait;
-
     /** @var QueueInterface */
     private $queue;
+
     /** @var DatabaseInterface */
     private $db;
+
     /** @var ORMInterface */
     private $orm;
+
     /** @var ChannelRepository */
     private $channels;
 
@@ -86,17 +85,6 @@ class PushService implements SingletonInterface
         return 'default';
     }
 
-    public function getChannel(string $group): ?Channel
-    {
-        return $this->channels->findByPK($group);
-    }
-
-    /**
-     * Concurrent safe!
-     *
-     * @param string $group
-     * @param int    $count
-     */
     public function update(string $group, int $count = +1)
     {
         $ok = $this->db->update('channels')
@@ -115,11 +103,13 @@ class PushService implements SingletonInterface
         }
     }
 
-    /**
-     * @return Channel[]
-     */
-    public function getCounts(): array
+    public function getChannels(): array
     {
         return $this->channels->findAll();
+    }
+
+    public function getChannel(string $group): ?Channel
+    {
+        return $this->channels->findByPK($group);
     }
 }

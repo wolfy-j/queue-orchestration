@@ -10,20 +10,13 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Database\ChannelRepository;
-use App\Workflow\RouteWorkflow;
 use Cycle\ORM\EntityManagerInterface;
 use Spiral\Console\Command;
-use Spiral\RoadRunner\Jobs\Jobs;
-use Spiral\RoadRunner\Jobs\Queue\MemoryCreateInfo;
-use Symfony\Component\Console\Input\InputArgument;
-use Temporal\Client\WorkflowClientInterface;
 
 class FlushCommand extends Command
 {
     protected const NAME = 'flush';
-    protected const DESCRIPTION = '';
-    protected const ARGUMENTS = [];
-    protected const OPTIONS = [];
+    protected const DESCRIPTION = 'Flush all channel counters';
 
     protected function perform(ChannelRepository $repository, EntityManagerInterface $em): void
     {

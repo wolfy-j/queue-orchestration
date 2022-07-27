@@ -2,23 +2,23 @@
 
 namespace App\Activity;
 
+use App\Service\PushService;
 use Cycle\ORM\EntityManager;
-use Spiral\Prototype\Traits\PrototypeTrait;
 use Spiral\RoadRunner\Jobs\Jobs;
 use Spiral\RoadRunner\Jobs\Queue\MemoryCreateInfo;
 use Spiral\TemporalBridge\Attribute\AssignWorker;
 use Temporal\Activity\ActivityInterface;
 use Temporal\Activity\ActivityMethod;
-use Temporal\Activity\LocalActivityInterface;
 
 #[AssignWorker('default')]
 #[ActivityInterface(prefix: "route.")]
 class RouteActivity
 {
-    use PrototypeTrait;
-
-    public function __construct(private Jobs $jobs)
-    {
+    public function __construct(
+        private Jobs $jobs,
+        private PushService $pushService,
+        private EntityManager $em
+    ) {
     }
 
     /** Returns list of routes to be updated. */
@@ -26,7 +26,7 @@ class RouteActivity
     public function calculateRoutes(): array
     {
         $channels = [];
-        foreach ($this->pushService->getCounts() as $ch) {
+        foreach ($this->pushService->getChannels() as $ch) {
             if ($ch->count > 100 && $ch->route === null) {
                 // start using custom queue (priority, max concurrency)
                 $channels[$ch->id] = $ch->id;
@@ -78,12 +78,10 @@ class RouteActivity
     ): void {
         dumprr(sprintf("Resetting routing for `%s`", $group));
 
-        $em = new EntityManager($this->orm);
-
         $chan = $this->pushService->getChannel($group);
         $chan->route = null;
 
-        $em->persist($chan);
-        $em->run();
+        $this->em->persist($chan);
+        $this->em->run();
     }
 }
