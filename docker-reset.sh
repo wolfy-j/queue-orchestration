@@ -18,4 +18,4 @@ docker image rm temporal-mysql || :
 docker image rm temporal || :
 docker image rm temporal-admin-tools || :
 docker image rm temporal-web || :
-docker image rm s2s-worker || :
+docker image rm s2s-worker-image || :

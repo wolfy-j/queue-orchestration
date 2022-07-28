@@ -3,7 +3,7 @@
 # CMD to run when docker container is started
 
 # ..............................................................................
-# 
+# Init
 
 # host.docker.internal does not resolve when ufw is running for tests
 S2S_HOST_IP=$(getent hosts host.docker.internal | awk '{ print $1 }')
@@ -18,8 +18,9 @@ fi
     echo "${S2S_HOST_IP}   host.stock2shop"
 } >> /etc/hosts
 
+
 # ..............................................................................
-# Dropbear
+# Dropbear SSH
 
 CONF_DIR="/etc/dropbear"
 SSH_KEY_DSS="${CONF_DIR}/dropbear_dss_host_key"

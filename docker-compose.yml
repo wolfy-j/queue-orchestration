@@ -91,6 +91,8 @@ services:
     container_name: s2s-worker
     ports:
       - "${APP_PORT_SSH}:22"
+      # RPC port, see .rr.yaml
+      - 6001:6001
     volumes:
       - ${APP_DIR}:/mnt/app
     networks:

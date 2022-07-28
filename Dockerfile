@@ -7,7 +7,7 @@ RUN echo "Building with PHP version $PHP_VERSION"
 ENV DEBIAN_FRONTEND "noninteractive"
 
 # Install dependencies and basic utils
-RUN apt-get update
+RUN apt-get update --fix-missing
 RUN apt install -yq curl
 RUN apt install -yq dropbear
 RUN apt install -yq htop
@@ -15,12 +15,14 @@ RUN apt install -yq iputils-ping
 RUN apt install -yq tmux
 RUN apt install -yq tree
 RUN apt install -yq vim
+RUN apt install -yq zip unzip php-zip
+RUN apt install -yq mycli
 
 # PHP dependencies as per
 # https://github.com/stock2shop/app/blob/master/scripts/docker/amd64/base/Dockerfile
 RUN apt install -yq software-properties-common
 RUN add-apt-repository ppa:ondrej/php
-RUN apt-get update
+RUN apt-get update --fix-missing
 RUN apt install -yq php${PHP_VERSION}
 RUN apt install -yq mcrypt php${PHP_VERSION}-mcrypt
 RUN apt install -yq \
@@ -48,23 +50,10 @@ COPY id_rsa.pub /root/id_rsa.pub
 RUN cat /root/id_rsa.pub > /root/.ssh/authorized_keys
 RUN rm /root/id_rsa.pub
 
+# Composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
 # Add run script
 COPY docker-cmd.sh /docker-cmd.sh
 RUN chmod +x /docker-cmd.sh
 CMD /docker-cmd.sh
-
-# Composer
-ARG APP_COMPOSER_HASH
-WORKDIR /mnt/app
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '${APP_COMPOSER_HASH}') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-RUN php composer-setup.php
-RUN php -r "unlink('composer-setup.php');"
-
-# RoadRunner
-RUN apt install zip unzip php-zip
-RUN php composer.phar install
-RUN php app.php configure
-RUN ./vendor/bin/rr get-binary
-RUN chmod u+x ./rr
-
