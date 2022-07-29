@@ -12,6 +12,13 @@ RUN apk update && apk add --no-cache \
   libzip-dev \
   unzip \
   mycli \
+  autoconf \
+  make \
+  gcc \
+  g++ \
+  musl-dev \
+  php8-dev \
+  php8-pear \
   bash
 
 # Install PHP Extensions
@@ -22,6 +29,15 @@ RUN docker-php-ext-install zip \
 
 # Database drivers
 RUN docker-php-ext-install pdo_mysql
+
+# Protobuf
+ENV PROTOBUF_VERSION "3.21.4"
+RUN pecl channel-update pecl.php.net
+RUN pecl install protobuf-${PROTOBUF_VERSION} && docker-php-ext-enable protobuf
+
+# GRPC
+ENV PROTOBUF_VERSION "3.21.3"
+RUN pecl install grpc && docker-php-ext-enable grpc
 
 # Copy Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
