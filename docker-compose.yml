@@ -93,11 +93,17 @@ services:
     container_name: s2s-worker
     environment:
       - "TEMPORAL_CLI_ADDRESS=temporal:7233"
-    command: [ "/usr/local/bin/wait-for-temporal.sh", "temporal", "rr", "serve", "-c", "/app/.rr.yaml" ]
+    command:
+      - "/usr/local/bin/wait-for-temporal-and-db.sh"
+      - "temporal"
+      - "rr"
+      - "serve"
+      - "-c"
+      - "/app/.rr.yaml"
     volumes:
       - ./:/app
     networks:
-        - temporal-network
+      - temporal-network
 
 # temporal-network network enables using service name for connections,
 # all the docker compose services must be one the same network

@@ -11,6 +11,7 @@ RUN apk update && apk add --no-cache \
   vim \
   libzip-dev \
   unzip \
+  mycli \
   bash
 
 # Install PHP Extensions
@@ -31,7 +32,7 @@ COPY --from=rr /usr/bin/rr /usr/bin/rr
 # Install Temporal CLI
 COPY --from=temporalio/admin-tools /usr/local/bin/tctl /usr/local/bin/tctl
 
-COPY wait-for-temporal.sh /usr/local/bin
-RUN chmod +x /usr/local/bin/wait-for-temporal.sh
+COPY wait-for-temporal-and-db.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/wait-for-temporal-and-db.sh
 
 CMD ["/usr/bin/rr", "serve", "-c", "/app/.rr.yaml"]
