@@ -36,8 +36,7 @@ RUN pecl channel-update pecl.php.net
 RUN pecl install protobuf-${PROTOBUF_VERSION} && docker-php-ext-enable protobuf
 
 # GRPC
-ENV PROTOBUF_VERSION "3.21.3"
-RUN pecl install grpc && docker-php-ext-enable grpc
+RUN MAKEFLAGS="-j 16" pecl install grpc && docker-php-ext-enable grpc
 
 # Copy Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
