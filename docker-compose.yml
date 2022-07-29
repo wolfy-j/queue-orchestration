@@ -1,4 +1,4 @@
-# Based on "docker-compose-mysql-es.yml", see 
+# Based on "docker-compose-mysql-es.yml", see
 # https://github.com/temporalio/docker-compose
 
 version: "3.5"
@@ -18,7 +18,7 @@ services:
       - temporal-network
     ports:
       - 9200:9200
-      
+
   mysql:
     container_name: temporal-mysql
     environment:
@@ -75,28 +75,28 @@ services:
     ports:
       - 8088:8088
 
-  # This service is similar to the "s2s-api" service in
-  # https://github.com/stock2shop/api/blob/master/docker-compose.yml
-  # Unlike stock2shop/app, which uses phusion/baseimage, 
-  # https://github.com/stock2shop/app/blob/master/scripts/docker/amd64/base/Dockerfile
-  # this repo won't require a running cron daemon inside the container
-  # https://github.com/phusion/baseimage-docker#overview
-  s2s-worker:
-    build: 
-      context: .
-      dockerfile: ${APP_DIR}/Dockerfile
-      args:
-        APP_PHP_VERSION: ${APP_PHP_VERSION}
-    image: s2s-worker-image
-    container_name: s2s-worker
-    ports:
-      - "${APP_PORT_SSH}:22"
-      # RPC port, see .rr.yaml
-      - 6001:6001
-    volumes:
-      - ${APP_DIR}:/mnt/app
-    networks:
-        - temporal-network
+#  # This service is similar to the "s2s-api" service in
+#  # https://github.com/stock2shop/api/blob/master/docker-compose.yml
+#  # Unlike stock2shop/app, which uses phusion/baseimage,
+#  # https://github.com/stock2shop/app/blob/master/scripts/docker/amd64/base/Dockerfile
+#  # this repo won't require a running cron daemon inside the container
+#  # https://github.com/phusion/baseimage-docker#overview
+#  s2s-worker:
+#    build:
+#      context: .
+#      dockerfile: ${APP_DIR}/Dockerfile
+#      args:
+#        APP_PHP_VERSION: ${APP_PHP_VERSION}
+#    image: s2s-worker-image
+#    container_name: s2s-worker
+#    ports:
+#      - "${APP_PORT_SSH}:22"
+#      # RPC port, see .rr.yaml
+#      - 6001:6001
+#    volumes:
+#      - ${APP_DIR}:/mnt/app
+#    networks:
+#        - temporal-network
 
 # temporal-network network enables using service name for connections,
 # all the docker compose services must be one the same network
