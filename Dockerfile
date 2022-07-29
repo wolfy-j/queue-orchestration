@@ -28,4 +28,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Copy RoadRunner
 COPY --from=rr /usr/bin/rr /usr/bin/rr
 
+# Install Temporal CLI
+COPY --from=temporalio/admin-tools /usr/local/bin/tctl /usr/local/bin/tctl
+
+COPY wait-for-temporal.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/wait-for-temporal.sh
+
 CMD ["/usr/bin/rr", "serve", "-c", "/app/.rr.yaml"]

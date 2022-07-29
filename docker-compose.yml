@@ -91,6 +91,9 @@ services:
         RR_VERSION: ${RR_VERSION}
     image: s2s-worker-image
     container_name: s2s-worker
+    environment:
+      - "TEMPORAL_CLI_ADDRESS=temporal:7233"
+    command: [ "/usr/local/bin/wait-for-temporal.sh", "temporal", "rr", "serve", "-c", "/app/.rr.yaml" ]
     volumes:
       - ./:/app
     networks:
