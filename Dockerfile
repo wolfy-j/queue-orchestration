@@ -36,6 +36,7 @@ RUN pecl channel-update pecl.php.net
 RUN pecl install protobuf-${PROTOBUF_VERSION} && docker-php-ext-enable protobuf
 
 # GRPC
+RUN apk add linux-headers
 RUN MAKEFLAGS="-j 16" pecl install grpc && docker-php-ext-enable grpc
 
 # Copy Composer
