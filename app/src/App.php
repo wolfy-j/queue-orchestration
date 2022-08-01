@@ -73,5 +73,7 @@ class App extends Kernel
      * Application specific services and extensions.
      */
     protected const APP = [
+        // application specific serializer
+        Bootloader\SerializerBootloader::class
     ];
 }
