@@ -4,6 +4,7 @@ namespace App\Activity;
 
 use App\Service\PushService;
 use Cycle\ORM\EntityManager;
+use Cycle\ORM\ORMInterface;
 use Spiral\RoadRunner\Jobs\Jobs;
 use Spiral\RoadRunner\Jobs\Queue\MemoryCreateInfo;
 use Spiral\TemporalBridge\Attribute\AssignWorker;
@@ -17,7 +18,7 @@ class RouteActivity
     public function __construct(
         private Jobs $jobs,
         private PushService $pushService,
-        private EntityManager $em
+        private ORMInterface $orm
     ) {
     }
 
@@ -63,11 +64,10 @@ class RouteActivity
     ): void {
         dumprr(sprintf("Routing `%s` to %s", $group, $route));
 
-        $em = new EntityManager($this->orm);
-
         $chan = $this->pushService->getChannel($group);
         $chan->route = $route;
 
+        $em = new EntityManager($this->orm);
         $em->persist($chan);
         $em->run();
     }
@@ -81,7 +81,8 @@ class RouteActivity
         $chan = $this->pushService->getChannel($group);
         $chan->route = null;
 
-        $this->em->persist($chan);
-        $this->em->run();
+        $em = new EntityManager($this->orm);
+        $em->persist($chan);
+        $em->run();
     }
 }

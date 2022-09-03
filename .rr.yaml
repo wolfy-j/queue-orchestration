@@ -19,7 +19,7 @@ jobs:
         num_workers: 16
 
 temporal:
-    address: 127.0.0.1:7233
+    address: temporal:7233
     namespace: default
     activities:
         num_workers: 4

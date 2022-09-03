@@ -29,6 +29,7 @@ class StartCommand extends Command
                 ->withWorkflowId(gethostname() . '-queue-supervisor')
                 ->withWorkflowIdReusePolicy(IdReusePolicy::POLICY_REJECT_DUPLICATE)
         );
+
         try {
             $workflowClient->start($wf);
             $this->writeln("<info>OK</info>");
